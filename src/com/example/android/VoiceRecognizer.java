@@ -21,6 +21,7 @@ package com.example.android;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
@@ -91,7 +92,9 @@ public class VoiceRecognizer extends Activity implements OnClickListener {
             float[] confidence = data.getFloatArrayExtra(RecognizerIntent.EXTRA_CONFIDENCE_SCORES);
             
             try {
-				FileWriter vars = new FileWriter("/sdcard/download/variants.txt");
+            	Date date = new Date();
+            	String name = date.toString();
+				FileWriter vars = new FileWriter("/sdcard/download/" + name);
 				for (String match : matches){
 					vars.write(match);
 					vars.append('\t');
