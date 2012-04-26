@@ -20,6 +20,7 @@ package com.example.android;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -80,7 +81,8 @@ public class VoiceRecognizer extends Activity implements OnClickListener {
 
         startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
     }
-
+    
+    private SimpleDateFormat format = new SimpleDateFormat("dd_MM_yyyy HH_mm_ss");
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -93,7 +95,7 @@ public class VoiceRecognizer extends Activity implements OnClickListener {
             
             try {
             	Date date = new Date();
-            	String name = date.toString();
+            	String name = format.format(date);
 				FileWriter vars = new FileWriter("/sdcard/download/" + name + ".txt");
 				for (String match : matches){
 					vars.write(match);
