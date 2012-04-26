@@ -42,7 +42,8 @@ public class VoiceRecognizer extends Activity implements OnClickListener {
 
     private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
     private ListView mList;
-
+    private SimpleDateFormat format = new SimpleDateFormat("dd_MM_yyyy HH_mm_ss");
+    private String name;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +63,10 @@ public class VoiceRecognizer extends Activity implements OnClickListener {
             speakButton.setEnabled(false);
             speakButton.setText("Recognizer not present");
         }
+        
+        Date date = new Date();
+    	name = format.format(date);
+    	name = "/sdcard/download/" + name + ".txt";		
     }
 
 
@@ -81,8 +86,6 @@ public class VoiceRecognizer extends Activity implements OnClickListener {
 
         startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
     }
-    
-    private SimpleDateFormat format = new SimpleDateFormat("dd_MM_yyyy HH_mm_ss");
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -94,15 +97,13 @@ public class VoiceRecognizer extends Activity implements OnClickListener {
             float[] confidence = data.getFloatArrayExtra(RecognizerIntent.EXTRA_CONFIDENCE_SCORES);
             
             try {
-            	Date date = new Date();
-            	String name = format.format(date);
-				FileWriter vars = new FileWriter("/sdcard/download/" + name + ".txt");
+            	FileWriter vars = new FileWriter(name, true);
 				for (String match : matches){
 					vars.write(match);
 					vars.append('\t');
 				}
 				vars.append('\n');
-				vars.write(String.valueOf(confidence[0]));
+				//vars.write(String.valueOf(confidence[0]));
 				vars.close();
 			} catch (IOException e) {
 				e.printStackTrace();
