@@ -94,7 +94,7 @@ public class VoiceRecognizer extends Activity implements OnClickListener {
             try {
             	Date date = new Date();
             	String name = date.toString();
-				FileWriter vars = new FileWriter("/sdcard/download/" + name);
+				FileWriter vars = new FileWriter("/sdcard/download/" + name + ".txt");
 				for (String match : matches){
 					vars.write(match);
 					vars.append('\t');
