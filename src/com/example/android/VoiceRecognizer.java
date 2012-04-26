@@ -91,7 +91,7 @@ public class VoiceRecognizer extends Activity implements OnClickListener {
             float[] confidence = data.getFloatArrayExtra(RecognizerIntent.EXTRA_CONFIDENCE_SCORES);
             
             try {
-				FileWriter vars = new FileWriter("variants.txt");
+				FileWriter vars = new FileWriter("/sdcard/download/variants.txt");
 				for (String match : matches){
 					vars.write(match);
 					vars.append('\t');
