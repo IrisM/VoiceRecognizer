@@ -7,8 +7,15 @@ public class CommandAnalyzer {
 	
 	public static void analyze(ArrayList<String> matches, float[] confidence) {
 		commandTokenizer.setInput(matches.iterator().next());
-		if (commandTokenizer.getNextToken().equals("позвони")) {
+		String command = commandTokenizer.getNextToken(); 
+		if (command.equals("позвони")) {
 			new PhoneCall(commandTokenizer.getNextToken()).call();
+		} else if (command.equals("смс") || command.equals("sms")){
+			String number = commandTokenizer.getNextToken();
+			String message = commandTokenizer.getNextToken();
+			new PhoneSMS().send(number, message);
+		} else {
+			ContactBook.getInstance().getContact(command, commandTokenizer.getNextToken());
 		}
 	}
 	

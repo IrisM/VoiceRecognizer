@@ -1,0 +1,1 @@
+This is an Android application for recognizing and analyzing user's speech commands.
