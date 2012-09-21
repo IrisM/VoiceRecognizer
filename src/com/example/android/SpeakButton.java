@@ -4,49 +4,52 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.speech.RecognizerIntent;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
+import android.util.Log;
 
-public class SpeakButton extends Activity implements OnClickListener {
+public class SpeakButton extends Activity{
 
-	private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
+	public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
+	public static final int SPEAK_BUTTON_REQUEST_CODE = 1111;
 	private VoiceRecognizer parentActivity;
 
-	public SpeakButton(VoiceRecognizer parentActivity) {
-		super();
+	public VoiceRecognizer getParentActivity() {
+		return parentActivity;
+	}
+
+	public void setParentActivity(VoiceRecognizer parentActivity) {
 		this.parentActivity = parentActivity;
 	}
 
-	public void onClick(View v) {
-		if (v.getId() == R.id.btn_speak) {
-			startVoiceRecognitionActivity();
-		}
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);	
+		startVoiceRecognitionActivity();
 	}
 
-	public void startVoiceRecognitionActivity() {
+	public void startVoiceRecognitionActivity() {		
 		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
 		intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass()
 				.getPackage().getName());
 		intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);
 		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ru-RU");
-
+		
 		startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
 	}
-
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == SpeakButton.VOICE_RECOGNITION_REQUEST_CODE
+		if (requestCode == VOICE_RECOGNITION_REQUEST_CODE
 				&& resultCode == RESULT_OK) {
 
 			// Fill the list view with the strings the recognizer thought it
 			// could have heard
 			ArrayList<String> matches = data
 					.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-			float[] confidence = data
-					.getFloatArrayExtra(RecognizerIntent.EXTRA_CONFIDENCE_SCORES);
+			Log.d("SpeakButton debug", matches.get(0));
+			//float[] confidence = data
+			//		.getFloatArrayExtra(RecognizerIntent.EXTRA_CONFIDENCE_SCORES);
 
 			/*
 			 * try { FileWriter vars = new FileWriter(name, true); for (String
@@ -55,20 +58,20 @@ public class SpeakButton extends Activity implements OnClickListener {
 			 * vars.close(); } catch (IOException e) { e.printStackTrace(); }
 			 */
 
-			int tmp = 0;
+			//int tmp = 0;
 			ArrayList<String> conf = new ArrayList<String>();
 			for (String ans : matches) {
-				conf.add(ans + "\n" + confidence[tmp]);
-				tmp++;
+				conf.add(ans + "\n");// + confidence[tmp]
+				//tmp++;
 			}
-
-			parentActivity.getCommandsList().setAdapter(
-					new ArrayAdapter<String>(this,
-							android.R.layout.simple_list_item_1, conf));
-			CommandAnalyzer.analyze(matches, confidence);
+			
+			//CommandAnalyzer.analyze(matches, null);//confidence
+			Intent intent = new Intent();
+			intent.putExtra("matches", matches);
+			setResult(RESULT_OK, intent);
 		}
 
 		super.onActivityResult(requestCode, resultCode, data);
+		finish();
 	}
-
 }

@@ -17,6 +17,7 @@
 package com.example.android;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
@@ -25,10 +26,14 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
-public class VoiceRecognizer extends Activity {
+public class VoiceRecognizer extends Activity  implements OnClickListener{
 
 	private ListView commandsList;
 
@@ -45,6 +50,13 @@ public class VoiceRecognizer extends Activity {
 		this.commandsList = commandsList;
 	}
 
+	public void onClick(View v) {
+		if (v.getId() == R.id.btn_speak) {
+			Intent intent = new Intent(this, SpeakButton.class);
+			startActivityForResult(intent, SpeakButton.SPEAK_BUTTON_REQUEST_CODE);
+		}
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -58,7 +70,7 @@ public class VoiceRecognizer extends Activity {
 		List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(
 				RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
 		if (activities.size() != 0) {
-			speakButton.setOnClickListener(new SpeakButton(this));
+			speakButton.setOnClickListener(this);
 		} else {
 			speakButton.setEnabled(false);
 			speakButton.setText("Recognizer not present");
@@ -69,5 +81,39 @@ public class VoiceRecognizer extends Activity {
 		 * "/sdcard/download/" + name + ".txt";
 		 */
 	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == SpeakButton.SPEAK_BUTTON_REQUEST_CODE
+				&& resultCode == RESULT_OK) {
 
+			// Fill the list view with the strings the recognizer thought it
+			// could have heard
+			ArrayList<String> matches = data
+					.getStringArrayListExtra("matches");
+			Log.d("debug", matches.get(0));
+			//float[] confidence = data
+			//		.getFloatArrayExtra(RecognizerIntent.EXTRA_CONFIDENCE_SCORES);
+
+			/*
+			 * try { FileWriter vars = new FileWriter(name, true); for (String
+			 * match : matches){ vars.write(match); vars.append('\t'); }
+			 * vars.append('\n'); //vars.write(String.valueOf(confidence[0]));
+			 * vars.close(); } catch (IOException e) { e.printStackTrace(); }
+			 */
+
+			//int tmp = 0;
+			ArrayList<String> conf = new ArrayList<String>();
+			for (String ans : matches) {
+				conf.add(ans + "\n");// + confidence[tmp]
+				//tmp++;
+			}
+
+			getCommandsList().setAdapter(
+					new ArrayAdapter<String>(this,
+							android.R.layout.simple_list_item_1, conf));			
+		}
+
+		super.onActivityResult(requestCode, resultCode, data);
+	}
 }

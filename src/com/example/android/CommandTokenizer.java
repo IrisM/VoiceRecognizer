@@ -12,6 +12,8 @@ public class CommandTokenizer {
 	}
 	
 	public String getNextToken(){
+		if (tokens.length == iter) 
+			throw new IndexOutOfBoundsException("No more tokens");
 		return tokens[iter++];
 	}
 }
