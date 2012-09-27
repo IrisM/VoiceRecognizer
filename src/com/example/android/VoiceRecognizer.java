@@ -76,6 +76,7 @@ public class VoiceRecognizer extends Activity  implements OnClickListener{
 			speakButton.setText("Recognizer not present");
 		}
 
+		
 		/*
 		 * Date date = new Date(); name = format.format(date); name =
 		 * "/sdcard/download/" + name + ".txt";

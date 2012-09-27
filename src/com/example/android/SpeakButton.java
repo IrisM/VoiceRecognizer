@@ -65,7 +65,10 @@ public class SpeakButton extends Activity{
 				//tmp++;
 			}
 			
-			//CommandAnalyzer.analyze(matches, null);//confidence
+			Intent commandAnalyzer = new Intent(this, CommandAnalyzer.class);
+			commandAnalyzer.putExtra("matches", matches);
+			startActivity(commandAnalyzer);
+			
 			Intent intent = new Intent();
 			intent.putExtra("matches", matches);
 			setResult(RESULT_OK, intent);
