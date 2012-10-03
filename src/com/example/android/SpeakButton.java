@@ -35,7 +35,8 @@ public class SpeakButton extends Activity{
 		intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);
 		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ru-RU");
 		
-		startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
+		startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);		
+			
 	}
 	
 	@Override
@@ -64,17 +65,17 @@ public class SpeakButton extends Activity{
 				conf.add(ans + "\n");// + confidence[tmp]
 				//tmp++;
 			}
-			
-			Intent commandAnalyzer = new Intent(this, CommandAnalyzer.class);
-			commandAnalyzer.putExtra("matches", matches);
-			startActivity(commandAnalyzer);
-			
 			Intent intent = new Intent();
 			intent.putExtra("matches", matches);
 			setResult(RESULT_OK, intent);
+			
+			Intent commandAnalyzer = new Intent(this, CommandAnalyzer.class);
+			//commandAnalyzer.putExtra("matches", matches);
+			startActivityForResult(commandAnalyzer, CommandAnalyzer.COMMAND_ANALYZER_REQUEST_CODE);			
 		}
 
 		super.onActivityResult(requestCode, resultCode, data);
+		Log.d("SpeakButton debug", "finished");
 		finish();
 	}
 }

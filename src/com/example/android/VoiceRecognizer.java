@@ -85,14 +85,14 @@ public class VoiceRecognizer extends Activity  implements OnClickListener{
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == SpeakButton.SPEAK_BUTTON_REQUEST_CODE
+		if (requestCode == CommandAnalyzer.COMMAND_ANALYZER_REQUEST_CODE
 				&& resultCode == RESULT_OK) {
 
 			// Fill the list view with the strings the recognizer thought it
 			// could have heard
 			ArrayList<String> matches = data
 					.getStringArrayListExtra("matches");
-			Log.d("debug", matches.get(0));
+			Log.d("Voice Recognizer", matches.get(0));
 			//float[] confidence = data
 			//		.getFloatArrayExtra(RecognizerIntent.EXTRA_CONFIDENCE_SCORES);
 
