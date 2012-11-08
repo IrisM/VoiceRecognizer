@@ -53,14 +53,14 @@ public class VoiceRecognizer extends Activity  implements OnClickListener{
 	public void onClick(View v) {
 		if (v.getId() == R.id.btn_speak) {
 			Intent intent = new Intent(this, SpeakButton.class);
-			startActivityForResult(intent, SpeakButton.SPEAK_BUTTON_REQUEST_CODE);
+			startActivityForResult(intent, CommandAnalyzer.COMMAND_ANALYZER_REQUEST_CODE);
 		}
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		Log.d("Voice Recognizer", "created");
 		setContentView(R.layout.main);
 		Button speakButton = (Button) findViewById(R.id.btn_speak);
 		commandsList = (ListView) findViewById(R.id.list);
@@ -76,6 +76,7 @@ public class VoiceRecognizer extends Activity  implements OnClickListener{
 			speakButton.setText("Recognizer not present");
 		}
 
+		
 		/*
 		 * Date date = new Date(); name = format.format(date); name =
 		 * "/sdcard/download/" + name + ".txt";
@@ -84,14 +85,14 @@ public class VoiceRecognizer extends Activity  implements OnClickListener{
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == SpeakButton.SPEAK_BUTTON_REQUEST_CODE
-				&& resultCode == RESULT_OK) {
+		Log.d("Voice Recognizer", "finished requestCode=" + requestCode + ", resultCode=" + resultCode);
+		if (requestCode == CommandAnalyzer.COMMAND_ANALYZER_REQUEST_CODE) {
 
 			// Fill the list view with the strings the recognizer thought it
 			// could have heard
 			ArrayList<String> matches = data
 					.getStringArrayListExtra("matches");
-			Log.d("debug", matches.get(0));
+			Log.d("Voice Recognizer", matches.get(0));
 			//float[] confidence = data
 			//		.getFloatArrayExtra(RecognizerIntent.EXTRA_CONFIDENCE_SCORES);
 
