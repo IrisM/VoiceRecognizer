@@ -24,6 +24,7 @@ public class SpeakButton extends Activity{
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);	
+		Log.d("Speak Button", "created");
 		startVoiceRecognitionActivity();
 	}
 
@@ -35,11 +36,13 @@ public class SpeakButton extends Activity{
 		intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);
 		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ru-RU");
 		
-		startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
+		startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);		
+			
 	}
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d("Speak Button", "finished requestCode=" + requestCode + ", resultCode=" + resultCode);
 		if (requestCode == VOICE_RECOGNITION_REQUEST_CODE
 				&& resultCode == RESULT_OK) {
 
@@ -47,7 +50,7 @@ public class SpeakButton extends Activity{
 			// could have heard
 			ArrayList<String> matches = data
 					.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-			Log.d("SpeakButton debug", matches.get(0));
+			Log.d("Speak Button", matches.get(0));
 			//float[] confidence = data
 			//		.getFloatArrayExtra(RecognizerIntent.EXTRA_CONFIDENCE_SCORES);
 
@@ -59,16 +62,18 @@ public class SpeakButton extends Activity{
 			 */
 
 			//int tmp = 0;
-			ArrayList<String> conf = new ArrayList<String>();
-			for (String ans : matches) {
-				conf.add(ans + "\n");// + confidence[tmp]
-				//tmp++;
-			}
-			
-			//CommandAnalyzer.analyze(matches, null);//confidence
+//			ArrayList<String> conf = new ArrayList<String>();
+//			for (String ans : matches) {
+//				conf.add(ans + "\n");// + confidence[tmp]
+//				//tmp++;
+//			}
 			Intent intent = new Intent();
 			intent.putExtra("matches", matches);
 			setResult(RESULT_OK, intent);
+			
+			Intent commandAnalyzer = new Intent(this, CommandAnalyzer.class);
+			commandAnalyzer.putExtra("matches", matches);
+			startActivity(commandAnalyzer);			
 		}
 
 		super.onActivityResult(requestCode, resultCode, data);

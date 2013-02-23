@@ -31,11 +31,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 public class VoiceRecognizer extends Activity  implements OnClickListener{
 
 	private ListView commandsList;
+	private EditText textField;
 
 	public static final SimpleDateFormat format = new SimpleDateFormat(
 			"dd_MM_yyyy HH_mm_ss");
@@ -50,20 +52,20 @@ public class VoiceRecognizer extends Activity  implements OnClickListener{
 		this.commandsList = commandsList;
 	}
 
-	public void onClick(View v) {
-		if (v.getId() == R.id.btn_speak) {
-			Intent intent = new Intent(this, SpeakButton.class);
-			startActivityForResult(intent, SpeakButton.SPEAK_BUTTON_REQUEST_CODE);
-		}
-	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		Log.d("Voice Recognizer", "created");
 		setContentView(R.layout.main);
 		Button speakButton = (Button) findViewById(R.id.btn_speak);
 		commandsList = (ListView) findViewById(R.id.list);
+		
+		Button textButton = (Button) findViewById(R.id.btn_text);
+		textField = (EditText) findViewById(R.id.text_field);
+		textField.requestFocus();
+		textButton.setOnClickListener(this);
+		
 
 		// Check to see if a recognition activity is present
 		PackageManager pm = getPackageManager();
@@ -73,25 +75,43 @@ public class VoiceRecognizer extends Activity  implements OnClickListener{
 			speakButton.setOnClickListener(this);
 		} else {
 			speakButton.setEnabled(false);
-			speakButton.setText("Recognizer not present");
+			speakButton.setText("Recognizer doesn't present\n Use the form below");
 		}
 
+		
 		/*
 		 * Date date = new Date(); name = format.format(date); name =
 		 * "/sdcard/download/" + name + ".txt";
 		 */
 	}
+
+	public void onClick(View v) {
+		if (v.getId() == R.id.btn_speak) {
+			Intent intent = new Intent(this, SpeakButton.class);
+			startActivityForResult(intent, CommandAnalyzer.COMMAND_ANALYZER_REQUEST_CODE);
+		}
+		else if (v.getId() == R.id.btn_text) {
+
+			String str = textField.getText().toString();
+			ArrayList<String> matches = new ArrayList<String>();
+	        matches.add(str);
+	        
+			Intent intent = new Intent(this, CommandAnalyzer.class);
+			intent.putExtra("matches", matches);
+			startActivityForResult(intent, CommandAnalyzer.COMMAND_ANALYZER_REQUEST_CODE);
+		}
+	}
+	
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == SpeakButton.SPEAK_BUTTON_REQUEST_CODE
-				&& resultCode == RESULT_OK) {
+		Log.d("Voice Recognizer", "finished requestCode=" + requestCode + ", resultCode=" + resultCode);
+		if (requestCode == CommandAnalyzer.COMMAND_ANALYZER_REQUEST_CODE) {
 
 			// Fill the list view with the strings the recognizer thought it
 			// could have heard
-			ArrayList<String> matches = data
-					.getStringArrayListExtra("matches");
-			Log.d("debug", matches.get(0));
+			ArrayList<String> matches = data.getStringArrayListExtra("matches");
+			Log.d("Voice Recognizer", matches.get(0));
 			//float[] confidence = data
 			//		.getFloatArrayExtra(RecognizerIntent.EXTRA_CONFIDENCE_SCORES);
 
@@ -111,7 +131,9 @@ public class VoiceRecognizer extends Activity  implements OnClickListener{
 
 			getCommandsList().setAdapter(
 					new ArrayAdapter<String>(this,
-							android.R.layout.simple_list_item_1, conf));			
+							android.R.layout.simple_list_item_1, conf));	
+			
+			textField.setText("");
 		}
 
 		super.onActivityResult(requestCode, resultCode, data);

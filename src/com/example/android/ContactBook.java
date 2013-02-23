@@ -5,6 +5,7 @@ import java.util.Collection;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 
 public class ContactBook extends Activity{
@@ -14,17 +15,20 @@ public class ContactBook extends Activity{
 	
 	private Collection<Contact> contacts;
 	
-	private ContactBook(){
-		super();
+	public void onCreate(Bundle savedInstanceState){
+		super.onCreate(savedInstanceState);
 		contacts.add(new Contact("Ира", "Броварь", "111"));
 		Intent viewIntent = new Intent(Intent.ACTION_VIEW);
 		viewIntent.setData(Uri.parse("content://contacts/people/1"));
 		startActivityForResult(viewIntent, GET_CONTACTS_REQUEST_CODE);		
 	}
 	
-	public static synchronized ContactBook getInstance(){
-		if (instance == null)
-			instance = new ContactBook();
+	public static synchronized ContactBook getInstance(Activity parent){
+		if (instance == null) {
+			//instance = new ContactBook();
+			Intent intent = new Intent(parent, ContactBook.class);
+			parent.startActivityForResult(intent, GET_CONTACTS_REQUEST_CODE);
+		}
 		return instance;
 	}
 	
@@ -41,6 +45,7 @@ public class ContactBook extends Activity{
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == GET_CONTACTS_REQUEST_CODE
 				&& resultCode == RESULT_OK) {
+			instance = this;
 			Log.d("Contact Book", data.getDataString());
 		}
 	}

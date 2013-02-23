@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">VoiceRecognizer</string>
-    <string name="speak_button">Speak!</string>
+    <string name="speak_button">Speak</string>
+    <string name="text_button">Submit text</string>
     <string name="supported_languages">Supported languages</string>
     <string name="language_preference">Voice Search in Settings</string>
     
