@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.telephony.SmsManager;
 import android.util.Log;
+import android.widget.Toast;
 
 public class CommandAnalyzer extends Activity{
 	private static final CommandTokenizer commandTokenizer = new CommandTokenizer();
@@ -18,6 +20,7 @@ public class CommandAnalyzer extends Activity{
 	public static final int SUB_ACTIVITY_SMS_REQUEST_CODE = 2311;
 	public static final int SUB_ACTIVITY_CONTACTS_REQUEST_CODE = 2312;
 	private ArrayList<String> matches;
+    private SmsManager manager;
 	
 	public void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
@@ -26,7 +29,7 @@ public class CommandAnalyzer extends Activity{
 		matches = intent.getStringArrayListExtra("matches");
 		Log.d("Command Analyzer", "matches.size = " + matches.size());
 		analyze();
-	}
+	} 	
 	public void analyze() {
 		try{
 			Iterator<String> iter = matches.iterator();
@@ -36,7 +39,7 @@ public class CommandAnalyzer extends Activity{
 				Log.d("Command Analyzer", "first variant: " + firstVariant);
 				if (commandTokenizer.hasNextToken()){
 					String command = commandTokenizer.getNextToken(); 
-					if (command.equals("позвони")) {
+					if (command.equals("позвони") || command.equals("call")) {
 						Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + commandTokenizer.getNextToken()));
 						//intent.setData();
 						//intent.putExtra(Intent.EXTRA_PHONE_NUMBER, "tel:" + commandTokenizer.getNextToken());
@@ -45,11 +48,21 @@ public class CommandAnalyzer extends Activity{
 					} else if (command.equals("смс") || command.equals("sms")){				
 						String number = commandTokenizer.getNextToken();
 						String message = commandTokenizer.getNextToken();
-						Intent intent = new Intent(Intent.ACTION_SENDTO);
-						intent.putExtra(Intent.EXTRA_TEXT, message);
-						intent.putExtra(Intent.EXTRA_PHONE_NUMBER, number);
-						startActivityForResult(intent, SUB_ACTIVITY_SMS_REQUEST_CODE);
+//						Intent intent = new Intent(Intent.ACTION_SENDTO);
+//						intent.putExtra(Intent.EXTRA_TEXT, message);
+//						intent.putExtra(Intent.EXTRA_PHONE_NUMBER, number);
+//						startActivityForResult(intent, SUB_ACTIVITY_SMS_REQUEST_CODE);
 						//new PhoneSMS().send(number, message);
+
+		                manager = SmsManager.getDefault();
+						manager.sendTextMessage(number, null, message, null, null);
+		                Toast.makeText(this,"SMS sent", Toast.LENGTH_LONG).show();
+		                
+		                Intent intent = new Intent();
+		    			intent.putExtra("matches", matches);
+		    			setResult(RESULT_OK, intent);
+		    			
+		    			finish();
 					} else {
 						Intent viewIntent = new Intent(Intent.ACTION_VIEW);
 						viewIntent.setData(Uri.parse("content://contacts"));
@@ -65,8 +78,11 @@ public class CommandAnalyzer extends Activity{
 			}
 		} catch (Exception e){
 			Log.d("Command Analyzer", "Please repeat",e);
+            Toast.makeText(this, "error: " + e.toString(), Toast.LENGTH_LONG).show();
+            finish();
 		}
 	}
+		
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d("Command Analyzer", "finished requestCode=" + requestCode + ", resultCode=" + resultCode);
 		/*if (requestCode == SpeakButton.SPEAK_BUTTON_REQUEST_CODE
