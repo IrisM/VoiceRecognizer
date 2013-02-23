@@ -62,17 +62,16 @@ public class SpeakButton extends Activity{
 			 */
 
 			//int tmp = 0;
-			ArrayList<String> conf = new ArrayList<String>();
-			for (String ans : matches) {
-				conf.add(ans + "\n");// + confidence[tmp]
-				//tmp++;
-			}
+//			ArrayList<String> conf = new ArrayList<String>();
+//			for (String ans : matches) {
+//				conf.add(ans + "\n");// + confidence[tmp]
+//				//tmp++;
+//			}
 			Intent intent = new Intent();
 			intent.putExtra("matches", matches);
 			setResult(RESULT_OK, intent);
 			
 			Intent commandAnalyzer = new Intent(this, CommandAnalyzer.class);
-			//commandAnalyzer.putExtra("matches", matches);
 			commandAnalyzer.putExtra("matches", matches);
 			startActivity(commandAnalyzer);			
 		}
